@@ -462,7 +462,7 @@
     background: var(--brand-bg, #1e1e1e);
   }
 
-  .btn .name { flex: 1; }
+  .btn .name { flex: 0 1 auto; min-width: 0; }
 
   .btn .action svg { width: 9px; height: 9px; margin-right: 5px; vertical-align: -0.5px; }
   .btn .action svg.cart { width: 12px; height: 12px; margin-right: 4px; }
@@ -502,6 +502,7 @@
   }
 
   .btn .badge {
+    margin-left: -4px;
     font-size: 9.5px;
     font-weight: 600;
     letter-spacing: 0.12em;
@@ -527,6 +528,7 @@
     align-items: center;
     justify-content: center;
     min-width: 66px;
+    margin-left: auto;
   }
   .btn:hover .action { background: rgba(255,255,255,0.16); }
 

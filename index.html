@@ -28,8 +28,7 @@
     --line: rgba(255,255,255,0.09);
     --glass: rgba(255,255,255,0.045);
     --glass-hover: rgba(255,255,255,0.085);
-    --accent: #1ED760;
-    --accent-2: #b6ffcf;
+    --accent: #FF2D3A;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -465,13 +464,6 @@
 
   .btn .name { flex: 1; }
 
-  /* Highlighted main platform */
-  .btn.primary {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, transparent), rgba(255,255,255,0.04));
-    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-  }
-  .btn.primary .action { background: var(--accent); color: #04140a; }
-  .btn.primary:hover .action { background: var(--accent-2); }
   .btn .action svg { width: 9px; height: 9px; margin-right: 5px; vertical-align: -0.5px; }
 
   /* OUT NOW stamp on the cover */
@@ -482,7 +474,7 @@
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.22em;
-    color: #04140a;
+    color: #fff;
     background: var(--accent);
     padding: 6px 10px 5px;
     border-radius: 6px;
@@ -801,7 +793,7 @@ const CONFIG = {
   // Release day with Italian time zone (+01:00 in winter, +02:00 in summer)
   release: '2026-11-05T00:00:00+01:00',
 
-  // Platform shown first and highlighted
+  // Platform shown first
   primary: 'spotify',
 
   // Leave a link empty ('') to hide that platform. Put the track/album URL here.
@@ -914,7 +906,7 @@ function renderButtons() {
     const url = CONFIG.links[key];
     if (!url) continue;
     const a = document.createElement('a');
-    a.className = 'btn' + (key === CONFIG.primary ? ' primary' : '');
+    a.className = 'btn';
     a.href = url;
     if (url !== '#') { a.target = '_blank'; a.rel = 'noopener'; }
     a.style.setProperty('--brand-bg', p.bg);
@@ -933,7 +925,7 @@ renderButtons();
 if (!reduceMotion) {
   const box = document.createElement('div');
   box.className = 'confetti';
-  const colors = ['#1ED760', '#ffffff', '#b6ffcf', '#FF8C00', '#d9d9d9'];
+  const colors = ['#FF2D3A', '#ffffff', '#ff8a92', '#d9d9d9'];
   for (let i = 0; i < 70; i++) {
     const c = document.createElement('i');
     const dur = Math.random() * 1.8 + 2.2;

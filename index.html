@@ -465,6 +465,7 @@
   .btn .name { flex: 1; }
 
   .btn .action svg { width: 9px; height: 9px; margin-right: 5px; vertical-align: -0.5px; }
+  .btn .action svg.cart { width: 12px; height: 12px; margin-right: 4px; }
 
   /* OUT NOW stamp on the cover */
   .stamp {
@@ -867,6 +868,7 @@ const $ = id => document.getElementById(id);
 const releaseAt = new Date(CONFIG.release).getTime();
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const PLAY = '<svg viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M1 0.5v9l8-4.5z"/></svg>';
+const CART = '<svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h3l2.6 12.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="9.5" cy="20.5" r="1.3" fill="currentColor"/><circle cx="17.5" cy="20.5" r="1.3" fill="currentColor"/></svg>';
 
 /* ── Text & cover ── */
 document.title = `${CONFIG.title} — ${CONFIG.artist} · Out now`;
@@ -919,7 +921,7 @@ function renderButtons() {
       <span class="icon-wrap">${p.icon}</span>
       <span class="name">${p.name}${p.badge ? `<small class="sub">${p.badge}</small>` : ''}</span>
       ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
-      <span class="action">${p.buy ? 'Buy' : PLAY + 'Play'}</span>`;
+      <span class="action">${p.buy ? CART + 'Buy' : PLAY + 'Play'}</span>`;
     wrap.appendChild(a);
   }
 }

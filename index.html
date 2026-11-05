@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Track Title — Yeezik · Out now</title>
+<meta name="description" content="The new Yeezik single is out now. Listen on your favourite platform.">
+<meta name="theme-color" content="#050505">
+
+<!-- Link preview (WhatsApp, Instagram, Telegram, X…) -->
+<meta property="og:type" content="music.song">
+<meta property="og:title" content="Track Title — Yeezik">
+<meta property="og:description" content="Out now everywhere. Listen now.">
+<meta property="og:image" content="artwork.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="artwork.png">
+<link rel="apple-touch-icon" href="artwork.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Radio+Canada:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050505;
+    --text: #f5f5f5;
+    --muted: #8a8a8a;
+    --faint: #4a4a4a;
+    --line: rgba(255,255,255,0.09);
+    --glass: rgba(255,255,255,0.045);
+    --glass-hover: rgba(255,255,255,0.085);
+    --accent: #1ED760;
+    --accent-2: #b6ffcf;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: 'Radio Canada', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    padding: max(2rem, env(safe-area-inset-top)) 1rem max(1.5rem, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ───── Ambient background: blurred cover + vignette + stars ───── */
+  .ambient {
+    position: fixed;
+    inset: -10%;
+    z-index: 0;
+    pointer-events: none;
+    background: center / cover no-repeat;
+    filter: blur(70px) saturate(1.3);
+    opacity: 0.35;
+    transform: scale(1.1);
+  }
+
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 45% at 50% 30%, rgba(255,255,255,0.06), transparent 70%),
+      radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%);
+  }
+
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle ease-in-out infinite;
+  }
+
+  .star.spark {
+    background: none;
+    width: 10px !important;
+    height: 10px !important;
+  }
+  .star.spark::before, .star.spark::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+  }
+  .star.spark::after { transform: rotate(45deg) scale(0.6); }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.6); }
+    50%      { opacity: var(--o, 0.6); transform: scale(1); }
+  }
+
+  /* ───── Layout ───── */
+  .card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: rise 0.9s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ───── Artwork ───── */
+  .artwork-wrap {
+    width: 100%;
+    perspective: 900px;
+  }
+
+  .artwork {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #111;
+    border: 1px solid var(--line);
+    box-shadow:
+      0 30px 80px -20px rgba(0,0,0,0.9),
+      0 0 60px -10px rgba(255,255,255,0.08);
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--sc, 1));
+    transition: transform 0.4s cubic-bezier(.2,.7,.2,1), box-shadow 0.4s;
+    will-change: transform;
+    cursor: zoom-in;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .artwork img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* light sweep across the cover */
+  .artwork::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.10) 50%, transparent 65%);
+    background-size: 250% 100%;
+    background-position: 150% 0;
+    animation: sheen 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sheen {
+    0%, 60% { background-position: 150% 0; }
+    100%    { background-position: -50% 0; }
+  }
+
+  /* glare that follows the pointer */
+  .glare {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,0.22), transparent 55%);
+    opacity: var(--go, 0);
+    transition: opacity 0.3s;
+    mix-blend-mode: soft-light;
+    z-index: 2;
+  }
+
+  .artwork.tilting { box-shadow: 0 45px 90px -25px rgba(0,0,0,0.95), 0 0 80px -10px rgba(255,255,255,0.14); }
+
+  /* ───── Lightbox: cover in primo piano + flip ───── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: rgba(0,0,0,0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition: background 0.45s, backdrop-filter 0.45s, -webkit-backdrop-filter 0.45s;
+    visibility: hidden;
+  }
+  .lightbox.open {
+    visibility: visible;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .lb-stage {
+    width: min(88vw, 78vh, 560px);
+    aspect-ratio: 1 / 1;
+    perspective: 1400px;
+    transition: transform 0.55s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .lb-tilt {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.35s cubic-bezier(.2,.7,.2,1);
+  }
+
+  .lb-flip {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.9s cubic-bezier(.3,1.25,.4,1);
+    cursor: pointer;
+  }
+  .lightbox.flipped .lb-flip { transform: rotateY(180deg); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 50px 120px -30px rgba(0,0,0,1), 0 0 100px -20px rgba(255,255,255,0.15);
+  }
+  .face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .face .glare { --go: 1; }
+
+  /* Back cover */
+  .face.back {
+    transform: rotateY(180deg);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.07), transparent 60%),
+      #0b0b0b;
+    display: flex;
+    flex-direction: column;
+    padding: 8% 8% 7%;
+    color: var(--text);
+  }
+  .back-head { display: flex; justify-content: space-between; align-items: flex-start; }
+  .back-head .b-artist { font-size: clamp(11px, 2.4vw, 13px); letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+  .back-head svg { width: clamp(22px, 5vw, 30px); height: auto; opacity: 0.9; }
+  .back .b-title { font-size: clamp(22px, 6vw, 36px); font-weight: 700; letter-spacing: -0.02em; margin-top: 4%; line-height: 1.05; }
+  .back .tracklist { margin-top: 7%; list-style: none; border-top: 1px solid var(--line); }
+  .back .tracklist li {
+    display: flex; gap: 12px; align-items: baseline;
+    padding: 3.2% 0;
+    border-bottom: 1px solid var(--line);
+    font-size: clamp(12px, 2.8vw, 15px);
+  }
+  .back .tracklist .n { color: var(--faint); font-variant-numeric: tabular-nums; width: 1.6em; }
+  .back .tracklist .t { flex: 1; }
+  .back .tracklist .dur { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .back .credits {
+    margin-top: auto;
+    font-size: clamp(9.5px, 2.1vw, 11.5px);
+    line-height: 1.75;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .back .credits b { color: #bbb; font-weight: 500; }
+  .back-foot { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5%; gap: 12px; }
+  .back-foot .legal { font-size: clamp(8px, 1.8vw, 10px); color: var(--faint); letter-spacing: 0.05em; line-height: 1.5; }
+  .barcode { height: clamp(26px, 6vw, 36px); display: flex; gap: 1.5px; align-items: stretch; }
+  .barcode i { display: block; background: #d8d8d8; }
+
+  .lb-hint {
+    position: absolute;
+    left: 50%;
+    bottom: max(22px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    opacity: 0;
+    transition: opacity 0.4s 0.4s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .lightbox.open .lb-hint { opacity: 1; }
+
+  .lb-close {
+    position: absolute;
+    top: max(16px, env(safe-area-inset-top));
+    right: 16px;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    color: #ddd;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s, background 0.15s;
+  }
+  .lb-close:hover { background: rgba(255,255,255,0.14); }
+  .lightbox.open .lb-close { opacity: 1; }
+
+  /* ───── Meta ───── */
+  .meta {
+    margin-top: 1.6rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-radius: 999px;
+    padding: 5px 12px 5px 10px;
+    margin-bottom: 1rem;
+  }
+
+  .status .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent);
+    animation: pulse 1.8s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); }
+    100% { box-shadow: 0 0 0 8px transparent; }
+  }
+
+  .title {
+    font-size: clamp(26px, 7vw, 32px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .artist {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 0.35rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* ───── Countdown ───── */
+  .release-info {
+    margin-top: 1.6rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .release-date {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.9rem;
+  }
+  .release-date strong { color: var(--text); font-weight: 500; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .cd-item {
+    text-align: center;
+    padding: 12px 0 10px;
+    border-radius: 12px;
+    background: var(--glass);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .cd-value {
+    display: block;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cd-label {
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+    margin: 1.6rem 0;
+  }
+
+  /* ───── Platform buttons ───── */
+  .platforms {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--glass);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #e8e8e8;
+    text-decoration: none;
+    font: 500 15px 'Radio Canada', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.12s;
+    opacity: 0;
+    animation: rise 0.6s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+
+  .btn:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.18); }
+  .btn:active { transform: scale(0.985); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .btn .icon-wrap {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: var(--brand-bg, #1e1e1e);
+  }
+
+  .btn .name { flex: 1; }
+
+  /* Highlighted main platform */
+  .btn.primary {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, transparent), rgba(255,255,255,0.04));
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  .btn.primary .action { background: var(--accent); color: #04140a; }
+  .btn.primary:hover .action { background: var(--accent-2); }
+  .btn .action svg { width: 9px; height: 9px; margin-right: 5px; vertical-align: -0.5px; }
+
+  /* OUT NOW stamp on the cover */
+  .stamp {
+    position: absolute;
+    top: 14px; left: 14px;
+    z-index: 3;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: #04140a;
+    background: var(--accent);
+    padding: 6px 10px 5px;
+    border-radius: 6px;
+    box-shadow: 0 6px 24px -6px color-mix(in srgb, var(--accent) 80%, transparent);
+    animation: stampIn 0.7s 0.6s cubic-bezier(.3,1.6,.5,1) both;
+    pointer-events: none;
+  }
+  @keyframes stampIn {
+    from { opacity: 0; transform: scale(1.8) rotate(-8deg); }
+    to   { opacity: 1; transform: scale(1) rotate(-3deg); }
+  }
+
+  /* Confetti burst on load */
+  .confetti { position: fixed; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
+  .confetti i {
+    position: absolute;
+    top: -12px;
+    width: 7px; height: 11px;
+    border-radius: 2px;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translate(var(--dx), 110vh) rotate(var(--rot)); opacity: 0.9; }
+  }
+
+  .btn .badge {
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #1a1a1a;
+    color: #777;
+    border: 1px solid #262626;
+  }
+
+  .btn .action {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn:hover .action { background: rgba(255,255,255,0.16); }
+
+
+  /* ───── Secondary actions ───── */
+  .extras {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .ghost {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px dashed rgba(255,255,255,0.14);
+    background: transparent;
+    color: var(--muted);
+    font: 500 13px 'Radio Canada', sans-serif;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.03); }
+  .ghost svg { width: 16px; height: 16px; }
+
+  /* ───── Footer ───── */
+  .footer {
+    margin-top: 2.2rem;
+    text-align: center;
+    font-size: 11px;
+    color: var(--faint);
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+  }
+  .footer a { color: #666; text-decoration: none; transition: color 0.2s; }
+  .footer a:hover { color: #999; }
+
+  /* ───── Toast ───── */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: max(24px, env(safe-area-inset-bottom));
+    transform: translate(-50%, 20px);
+    background: #f5f5f5;
+    color: #000;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .hidden { display: none !important; }
+
+  /* ───── Mobile (default): right column is just a stacked column ───── */
+  .info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .btn .sub { display: none; }
+
+  /* ═════════ PC LAYOUT — schermi larghi ═════════ */
+  @media (min-width: 960px) {
+    body {
+      align-items: center;
+      padding: 3rem 3rem;
+    }
+
+    .card {
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(48px, 6vw, 96px);
+      align-items: center;
+    }
+
+    .artwork-wrap {
+      perspective: 1400px;
+      position: sticky;
+      top: 3rem;
+      width: min(100%, calc(100vh - 6rem));
+      justify-self: center;
+    }
+    .artwork { border-radius: 22px; }
+
+    .info { align-items: stretch; }
+
+    .meta { margin-top: 0; text-align: left; }
+    .status { margin-bottom: 1.4rem; }
+    .title { font-size: clamp(44px, 4.6vw, 64px); letter-spacing: -0.03em; }
+    .artist { font-size: 18px; margin-top: 0.6rem; }
+
+    .release-info { text-align: left; margin-top: 2rem; }
+    .release-date { font-size: 13px; }
+    .stats { max-width: 440px; }
+    .cd-value { font-size: 24px; }
+
+    .divider { margin: 2rem 0 1.6rem; background: linear-gradient(90deg, var(--line), transparent); }
+
+    /* platforms in two columns */
+    .platforms {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn { padding: 10px 12px; gap: 12px; font-size: 14px; }
+    .btn .icon-wrap { width: 38px; height: 38px; }
+    .btn .name { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+    .btn .badge { display: none; }
+    .btn .sub {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #777;
+      margin-top: 2px;
+    }
+    .btn .action { padding: 6px 11px; font-size: 11.5px; }
+
+    .extras { max-width: 100%; }
+
+    .footer { text-align: left; margin-top: 2rem; }
+
+    .lb-hint { font-size: 12px; }
+  }
+
+  /* laptop screens with little height: tighten vertical spacing */
+  @media (min-width: 960px) and (max-height: 820px) {
+    body { padding-top: 2rem; padding-bottom: 2rem; }
+    .status { margin-bottom: 1rem; }
+    .title { font-size: clamp(38px, 4vw, 52px); }
+    .release-info { margin-top: 1.4rem; }
+    .cd-item { padding: 9px 0 8px; }
+    .cd-value { font-size: 20px; }
+    .divider { margin: 1.4rem 0 1.2rem; }
+    .platforms { gap: 8px; }
+    .btn { padding: 8px 12px; }
+    .btn .icon-wrap { width: 34px; height: 34px; }
+    .extras { margin-top: 10px; }
+    .ghost { padding: 10px; }
+    .footer { margin-top: 1.2rem; }
+  }
+
+  /* very wide screens: a bit more breathing room */
+  @media (min-width: 1440px) {
+    .card { max-width: 1280px; }
+  }
+
+  /* Respect users who prefer less motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .btn { opacity: 1; }
+    .star { opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient" id="ambient"></div>
+<div class="vignette"></div>
+<div class="stars" id="stars"></div>
+
+<main class="card">
+
+  <div class="artwork-wrap">
+    <div class="artwork" id="artwork" role="button" tabindex="0" aria-label="Open cover">
+      <img id="cover" src="artwork.png" alt="" width="1000" height="1000">
+      <span class="glare"></span>
+      <span class="stamp">OUT NOW</span>
+    </div>
+  </div>
+
+  <div class="info">
+
+  <div class="meta">
+    <p class="status"><span class="dot"></span><span id="statusText">Out now</span></p>
+    <h1 class="title" id="title"></h1>
+    <p class="artist" id="artist"></p>
+  </div>
+
+  <section class="release-info" id="releaseInfo">
+    <p class="release-date" id="releaseLine"></p>
+    <div class="stats" id="stats">
+      <div class="cd-item"><span class="cd-value" id="stType"></span><span class="cd-label">Format</span></div>
+      <div class="cd-item"><span class="cd-value" id="stTracks"></span><span class="cd-label">Tracks</span></div>
+      <div class="cd-item"><span class="cd-value" id="stLength"></span><span class="cd-label">Length</span></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <nav class="platforms" id="platforms" aria-label="Streaming platforms"></nav>
+
+  <div class="extras">
+    <button class="ghost" id="copyBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+      Copy link
+    </button>
+    <button class="ghost" id="shareBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>
+      Share
+    </button>
+  </div>
+
+  <footer class="footer">
+    &copy; <span id="year"></span> · <span id="footerArtist"></span><br>
+    powered by <a href="https://www.dakoyas-lab.com" target="_blank" rel="noopener">dakoyas lab.</a>
+  </footer>
+
+  </div>
+
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<!-- Cover in primo piano: click per girarla -->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Cover">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close">✕</button>
+  <div class="lb-stage" id="lbStage">
+    <div class="lb-tilt" id="lbTilt">
+      <div class="lb-flip" id="lbFlip">
+        <div class="face front">
+          <img id="lbCover" src="artwork.png" alt="">
+          <span class="glare"></span>
+        </div>
+        <div class="face back">
+          <div class="back-head">
+            <span class="b-artist" id="bArtist"></span>
+            <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 0L13.4 8.6 20.5 3.5 15.4 10.6 24 12 15.4 13.4 20.5 20.5 13.4 15.4 12 24 10.6 15.4 3.5 20.5 8.6 13.4 0 12 8.6 10.6 3.5 3.5 10.6 8.6Z"/></svg>
+          </div>
+          <div class="b-title" id="bTitle"></div>
+          <ol class="tracklist" id="bTracks"></ol>
+          <div class="credits" id="bCredits"></div>
+          <div class="back-foot">
+            <div class="legal" id="bLegal"></div>
+            <div class="barcode" id="bBarcode" aria-hidden="true"></div>
+          </div>
+          <span class="glare"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lb-hint" id="lbHint">Tap the cover to flip</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ⚙️  CONFIG — change everything here, nothing else to touch
+   ═══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  title:   'Track Title',
+  artist:  'Yeezik',
+  cover:   'artwork.png',
+
+  type:    'Single',           // 'Single', 'EP' or 'Album'
+
+  // Release day with Italian time zone (+01:00 in winter, +02:00 in summer)
+  release: '2026-11-05T00:00:00+01:00',
+
+  // Platform shown first and highlighted
+  primary: 'spotify',
+
+  // Leave a link empty ('') to hide that platform. Put the track/album URL here.
+  links: {
+    spotify:      '#',
+    apple:        '#',
+    soundcloud:   '#',
+    beatport:     '#',
+    youtubemusic: '#',
+    amazon:       '#',
+    tidal:        '#',
+    deezer:       '#',
+  },
+
+  // Retro della copertina (si vede cliccando sull'artwork ingrandito)
+  back: {
+    tracks: [
+      { title: 'Track Title',                  duration: '2:58' },
+      { title: 'Track Title (Extended Mix)',   duration: '5:12' },
+    ],
+    credits: [
+      ['Produced by', 'Yeezik'],
+      ['Mixed & mastered by', 'Yeezik'],
+      ['Artwork', 'Yeezik'],
+    ],
+    legal: '℗ & © 2026 Yeezik. All rights reserved.',
+  },
+};
+/* ═══════════════════════════════════════════════════════════════ */
+
+const PLATFORMS = {
+  spotify: {
+    name: 'Spotify', bg: '#0f2a18',
+    icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#1ED760" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>'
+  },
+  apple: {
+    name: 'Apple Music', bg: '#2a0f10',
+    icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#FA243C" aria-hidden="true"><path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.045-1.773-.6-1.943-1.536a1.88 1.88 0 011.038-2.022c.323-.16.67-.25 1.018-.324.378-.082.758-.153 1.134-.24.274-.063.457-.23.51-.516a.904.904 0 00.02-.193c0-1.815 0-3.63-.002-5.443a.725.725 0 00-.026-.185c-.04-.15-.15-.243-.304-.234-.16.01-.318.035-.475.066-.76.15-1.52.303-2.28.456l-2.325.47-1.374.278c-.016.003-.032.01-.048.013-.277.077-.377.203-.39.49-.002.042 0 .086 0 .13-.002 2.602 0 5.204-.003 7.805 0 .42-.047.836-.215 1.227-.278.64-.77 1.04-1.434 1.233-.35.1-.71.16-1.075.172-.96.036-1.755-.6-1.92-1.544-.14-.812.23-1.685 1.154-2.075.357-.15.73-.232 1.108-.31.287-.06.575-.116.86-.177.383-.083.583-.323.6-.714v-.15c0-2.96 0-5.922.002-8.882 0-.123.013-.25.042-.37.07-.285.273-.448.546-.518.255-.066.515-.112.774-.165.733-.15 1.466-.296 2.2-.444l2.27-.46c.67-.134 1.34-.27 2.01-.403.22-.043.442-.088.663-.106.31-.025.523.17.554.482.008.073.012.148.012.223.002 1.91.002 3.822 0 5.732z"/></svg>'
+  },
+  soundcloud: {
+    name: 'SoundCloud', bg: '#2a1500',
+    icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#FF5500" aria-hidden="true"><path d="M23.999 14.165c-.052 1.796-1.612 3.169-3.4 3.169h-8.18a.68.68 0 0 1-.675-.683V7.862a.747.747 0 0 1 .452-.724s.75-.513 2.333-.513a5.364 5.364 0 0 1 2.763.755 5.433 5.433 0 0 1 2.57 3.54c.282-.08.574-.121.868-.12.884 0 1.73.358 2.347.992s.948 1.49.922 2.373ZM10.721 8.421c.247 2.98.427 5.697 0 8.672a.264.264 0 0 1-.53 0c-.395-2.946-.22-5.718 0-8.672a.264.264 0 0 1 .53 0ZM9.072 9.448c.285 2.659.37 4.986-.006 7.655a.277.277 0 0 1-.55 0c-.331-2.63-.256-5.02 0-7.655a.277.277 0 0 1 .556 0Zm-1.663-.257c.27 2.726.39 5.171 0 7.904a.266.266 0 0 1-.532 0c-.38-2.69-.257-5.21 0-7.904a.266.266 0 0 1 .532 0Zm-1.647.77a26.108 26.108 0 0 1-.008 7.147.272.272 0 0 1-.542 0 27.955 27.955 0 0 1 0-7.147.275.275 0 0 1 .55 0Zm-1.67 1.769c.421 1.865.228 3.5-.029 5.388a.257.257 0 0 1-.514 0c-.21-1.858-.398-3.549 0-5.389a.272.272 0 0 1 .543 0Zm-1.655-.273c.388 1.897.26 3.508-.01 5.412-.026.28-.514.283-.54 0-.244-1.878-.347-3.54-.01-5.412a.283.283 0 0 1 .56 0Zm-1.668.911c.4 1.268.257 2.292-.026 3.572a.257.257 0 0 1-.514 0c-.241-1.262-.354-2.312-.023-3.572a.283.283 0 0 1 .563 0Z"/></svg>'
+  },
+  beatport: {
+    name: 'Beatport', bg: '#0a1f17', buy: true, badge: 'Extended',
+    icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#01FF95" aria-hidden="true"><path d="M21.429 17.055a7.114 7.114 0 0 1-.794 3.246 6.917 6.917 0 0 1-2.181 2.492 6.698 6.698 0 0 1-3.063 1.163 6.653 6.653 0 0 1-3.239-.434 6.796 6.796 0 0 1-2.668-1.932 7.03 7.03 0 0 1-1.481-2.983 7.124 7.124 0 0 1 .049-3.345 7.015 7.015 0 0 1 1.566-2.937l-4.626 4.73-2.421-2.479 5.201-5.265a3.791 3.791 0 0 0 1.066-2.675V0h3.41v6.613a7.172 7.172 0 0 1-.519 2.794 7.02 7.02 0 0 1-1.559 2.353l-.153.156a6.768 6.768 0 0 1 3.49-1.725 6.687 6.687 0 0 1 3.845.5 6.873 6.873 0 0 1 2.959 2.564 7.118 7.118 0 0 1 1.118 3.8Zm-3.089 0a3.89 3.89 0 0 0-.611-2.133 3.752 3.752 0 0 0-1.666-1.424 3.65 3.65 0 0 0-2.158-.233 3.704 3.704 0 0 0-1.92 1.037 3.852 3.852 0 0 0-1.031 1.955 3.908 3.908 0 0 0 .205 2.213c.282.7.76 1.299 1.374 1.721a3.672 3.672 0 0 0 2.076.647 3.637 3.637 0 0 0 2.635-1.096c.347-.351.622-.77.81-1.231.188-.461.285-.956.286-1.456Z"/></svg>'
+  },
+  youtubemusic: {
+    name: 'YouTube Music', bg: '#2a0a0a',
+    icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#FF0000" aria-hidden="true"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.104c-3.924 0-7.104-3.18-7.104-7.104S8.076 4.896 12 4.896s7.104 3.18 7.104 7.104-3.18 7.104-7.104 7.104zm0-13.332c-3.432 0-6.228 2.796-6.228 6.228S8.568 18.228 12 18.228s6.228-2.796 6.228-6.228S15.432 5.772 12 5.772zM9.684 15.54V8.46L15.816 12l-6.132 3.54z"/></svg>'
+  },
+  amazon: {
+    name: 'Amazon Music', bg: '#081c26',
+    icon: '<svg width="28" height="16.8" viewBox="0 0 24 14.4" fill="#25A1D9" aria-hidden="true"><path d="M0.0 9.7L0.0 9.8L0.2 10.0L0.6 10.4L1.5 11.1L2.6 11.8L4.6 12.8L5.8 13.3L7.4 13.8L8.9 14.1L10.6 14.3L12.1 14.4L13.5 14.3L14.8 14.1L16.6 13.7L18.6 13.1L19.6 12.7L20.4 12.3L21.1 11.8L21.6 11.5L21.8 11.2L21.8 11.1L21.7 10.9L21.4 10.9L19.4 11.6L18.0 12.1L16.4 12.4L15.3 12.6L13.8 12.7L12.6 12.8L10.1 12.7L8.9 12.6L7.5 12.4L6.2 12.1L5.9 11.9L5.0 11.7L3.7 11.3L2.6 10.8L0.3 9.6L0.1 9.6ZM19.7 9.8L19.6 9.9L19.6 10.0L19.7 10.0L20.6 9.9L22.0 9.8L22.5 9.9L22.7 10.0L22.9 10.2L23.0 10.5L22.9 11.1L22.6 12.3L22.2 13.2L22.2 13.4L22.4 13.3L22.7 13.0L23.1 12.5L23.4 12.0L23.7 11.4L23.9 10.6L24.0 10.0L24.0 9.6L23.9 9.4L23.7 9.2L22.9 9.1L21.8 9.1L21.2 9.1L20.6 9.3L20.2 9.5ZM18.5 1.6L18.4 1.7L18.4 2.0L18.4 6.5L18.5 6.6L18.8 6.6L18.9 6.6L18.9 6.5L18.9 1.7L18.9 1.6ZM8.9 1.7L8.9 1.8L8.9 5.3L8.9 5.9L9.1 6.3L9.5 6.6L9.8 6.8L10.2 6.8L10.8 6.8L11.5 6.6L12.3 6.1L12.4 6.2L12.4 6.6L12.5 6.6L12.8 6.6L12.9 6.5L12.9 1.7L12.8 1.6L12.4 1.6L12.4 1.7L12.3 5.7L12.0 5.9L11.4 6.2L11.0 6.3L10.5 6.3L10.1 6.3L9.8 6.2L9.6 6.0L9.5 5.7L9.4 5.2L9.4 1.7L9.3 1.7ZM21.6 1.7L21.2 1.8L20.8 2.2L20.5 2.6L20.3 3.1L20.2 3.6L20.2 4.3L20.2 4.9L20.4 5.6L20.8 6.1L21.0 6.3L21.4 6.6L21.8 6.7L22.4 6.8L23.1 6.7L23.6 6.6L23.7 6.4L23.7 6.2L23.6 6.1L22.9 6.3L22.4 6.3L21.9 6.2L21.4 6.0L21.2 5.8L20.9 5.4L20.8 5.1L20.7 4.6L20.7 3.8L20.9 3.0L21.2 2.5L21.4 2.3L21.9 2.1L22.3 2.0L22.9 2.0L23.4 2.1L23.5 2.1L23.7 2.1L23.7 1.8L23.6 1.7L23.1 1.6L22.1 1.5ZM15.6 1.5L15.2 1.5L14.9 1.7L14.6 1.8L14.4 2.0L14.2 2.3L14.1 2.6L14.1 3.1L14.2 3.3L14.4 3.7L14.9 4.0L16.3 4.6L16.7 4.8L16.9 5.2L16.9 5.6L16.8 5.8L16.7 6.1L16.4 6.2L16.0 6.3L15.4 6.3L14.6 6.2L14.2 6.1L14.1 6.1L14.0 6.1L14.0 6.4L14.3 6.6L14.7 6.7L15.1 6.8L16.0 6.8L16.4 6.7L16.8 6.5L17.1 6.3L17.3 6.1L17.4 5.8L17.5 5.4L17.4 5.1L17.3 4.8L17.1 4.5L16.7 4.2L15.5 3.8L14.9 3.4L14.7 3.2L14.6 3.0L14.6 2.6L14.7 2.4L14.8 2.2L15.1 2.0L15.8 1.9L16.3 2.0L17.1 2.2L17.2 2.1L17.2 1.8L17.0 1.7L16.4 1.5ZM0.4 1.7L0.3 1.7L0.3 6.6L0.4 6.6L0.8 6.6L0.9 6.6L0.9 2.6L1.1 2.4L1.6 2.2L2.0 2.0L2.6 1.9L3.0 2.0L3.2 2.1L3.5 2.3L3.6 2.7L3.7 3.1L3.7 6.5L3.8 6.6L4.1 6.6L4.2 6.5L4.2 2.6L4.5 2.4L5.2 2.1L5.6 2.0L6.3 2.0L6.6 2.1L6.9 2.5L7.0 3.0L7.0 6.6L7.1 6.6L7.5 6.6L7.6 6.5L7.6 2.8L7.5 2.4L7.4 2.1L7.0 1.7L6.7 1.5L6.3 1.5L5.6 1.5L4.8 1.8L4.1 2.2L4.1 2.2L3.9 2.0L3.7 1.7L3.3 1.5L3.1 1.5L2.2 1.5L1.5 1.8L1.0 2.1L0.8 2.0L0.8 1.8L0.8 1.7ZM18.5 0.0L18.3 0.2L18.3 0.5L18.5 0.8L18.8 0.8L19.1 0.6L19.1 0.2L19.0 0.2L18.8 0.0Z"/></svg>'
+  },
+  tidal: {
+    name: 'Tidal', bg: '#1e1e1e',
+    icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M12.012 3.992L8.008 7.996 4.004 3.992 0 7.996 4.004 12l4.004-4.004L12.012 12l-4.004 4.004 4.004 4.004 4.004-4.004L12.012 12l4.004-4.004-4.004-4.004zM16.042 7.996l3.979-3.979L24 7.996l-3.979 3.979z"/></svg>'
+  },
+  deezer: {
+    name: 'Deezer', bg: '#1c0f2a',
+    icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#A238FF" aria-hidden="true"><path d="M.693 10.024c.381 0 .693-1.256.693-2.807 0-1.55-.312-2.807-.693-2.807C.312 4.41 0 5.666 0 7.217s.312 2.808.693 2.808ZM21.038 1.56c-.364 0-.684.805-.91 2.096C19.765 1.446 19.184 0 18.526 0c-.78 0-1.464 2.036-1.784 5-.312-2.158-.788-3.536-1.325-3.536-.745 0-1.386 2.704-1.62 6.472-.442-1.932-1.083-3.145-1.793-3.145s-1.35 1.213-1.793 3.145c-.242-3.76-.874-6.463-1.628-6.463-.537 0-1.013 1.378-1.325 3.535C6.938 2.036 6.262 0 5.474 0c-.658 0-1.247 1.447-1.602 3.665-.217-1.291-.546-2.105-.91-2.105-.675 0-1.221 2.807-1.221 6.272 0 3.466.546 6.273 1.221 6.273.277 0 .537-.476.736-1.273.32 2.928.996 4.938 1.776 4.938.606 0 1.143-1.204 1.507-3.11.251 3.622.875 6.195 1.602 6.195.46 0 .875-1.023 1.187-2.677C10.142 21.6 11 24 12.004 24c1.005 0 1.863-2.4 2.235-5.822.312 1.654.727 2.677 1.186 2.677.728 0 1.352-2.573 1.603-6.195.364 1.906.9 3.11 1.507 3.11.78 0 1.455-2.01 1.775-4.938.208.797.46 1.273.737 1.273.675 0 1.22-2.807 1.22-6.273-.008-3.457-.553-6.272-1.23-6.272ZM23.307 10.024c.381 0 .693-1.256.693-2.807 0-1.55-.312-2.807-.693-2.807-.381 0-.693 1.256-.693 2.807s.312 2.808.693 2.808Z"/></svg>'
+  },
+};
+
+const $ = id => document.getElementById(id);
+const releaseAt = new Date(CONFIG.release).getTime();
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PLAY = '<svg viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M1 0.5v9l8-4.5z"/></svg>';
+
+/* ── Text & cover ── */
+document.title = `${CONFIG.title} — ${CONFIG.artist} · Out now`;
+$('title').textContent = CONFIG.title;
+$('artist').textContent = CONFIG.artist;
+$('footerArtist').textContent = CONFIG.artist;
+$('year').textContent = new Date().getFullYear();
+$('cover').src = CONFIG.cover;
+$('cover').alt = `${CONFIG.title} — ${CONFIG.artist} cover`;
+$('ambient').style.backgroundImage = `url("${CONFIG.cover}")`;
+
+const dateLabel = new Date(releaseAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Rome' });
+
+/* ── "Released today / 3 days ago" ── */
+const romeDay = t => new Date(new Date(t).toLocaleDateString('en-CA', { timeZone: 'Europe/Rome' })).getTime();
+const daysOut = Math.max(0, Math.round((romeDay(Date.now()) - romeDay(releaseAt)) / 864e5));
+const ago = daysOut === 0 ? 'today' : daysOut === 1 ? 'yesterday' : daysOut < 7 ? `${daysOut} days ago` : `on ${dateLabel}`;
+$('releaseLine').innerHTML = `Released <strong>${ago}</strong>` + (daysOut > 0 && daysOut < 7 ? ` · ${dateLabel}` : '');
+if (daysOut === 0) $('statusText').textContent = 'Out now · new release';
+
+/* ── Format / tracks / length (from the back-cover tracklist) ── */
+(() => {
+  const tracks = (CONFIG.back && CONFIG.back.tracks) || [];
+  const secs = tracks.reduce((a, t) => {
+    const [m, s] = String(t.duration || '0:0').split(':').map(Number);
+    return a + (m || 0) * 60 + (s || 0);
+  }, 0);
+  $('stType').textContent = CONFIG.type || 'Single';
+  $('stTracks').textContent = tracks.length || 1;
+  $('stLength').textContent = secs ? `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}` : '—';
+})();
+
+/* ── Platform buttons (main platform first) ── */
+function renderButtons() {
+  const wrap = $('platforms');
+  wrap.innerHTML = '';
+  const keys = Object.keys(PLATFORMS).sort((a, b) => (b === CONFIG.primary) - (a === CONFIG.primary));
+  let i = 0;
+  for (const key of keys) {
+    const p = PLATFORMS[key];
+    const url = CONFIG.links[key];
+    if (!url) continue;
+    const a = document.createElement('a');
+    a.className = 'btn' + (key === CONFIG.primary ? ' primary' : '');
+    a.href = url;
+    if (url !== '#') { a.target = '_blank'; a.rel = 'noopener'; }
+    a.style.setProperty('--brand-bg', p.bg);
+    a.style.animationDelay = `${0.25 + i++ * 0.06}s`;
+    a.innerHTML = `
+      <span class="icon-wrap">${p.icon}</span>
+      <span class="name">${p.name}${p.badge ? `<small class="sub">${p.badge}</small>` : ''}</span>
+      ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+      <span class="action">${p.buy ? 'Buy' : PLAY + 'Play'}</span>`;
+    wrap.appendChild(a);
+  }
+}
+renderButtons();
+
+/* ── Confetti burst on arrival ── */
+if (!reduceMotion) {
+  const box = document.createElement('div');
+  box.className = 'confetti';
+  const colors = ['#1ED760', '#ffffff', '#b6ffcf', '#FF8C00', '#d9d9d9'];
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement('i');
+    const dur = Math.random() * 1.8 + 2.2;
+    c.style.cssText = `
+      left:${Math.random() * 100}%;
+      background:${colors[i % colors.length]};
+      --dx:${(Math.random() - 0.5) * 200}px;
+      --rot:${Math.random() * 900 - 450}deg;
+      animation-duration:${dur}s;
+      animation-delay:${0.4 + Math.random() * 0.9}s;
+      transform:rotate(${Math.random() * 360}deg);`;
+    box.appendChild(c);
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 5000);
+}
+
+/* ── Toast ── */
+let toastTimer;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ── Copy link ── */
+$('copyBtn').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(location.href); toast('Link copied'); }
+  catch (e) { toast('Copy failed'); }
+});
+
+/* ── Share ── */
+$('shareBtn').addEventListener('click', async () => {
+  const data = { title: `${CONFIG.title} — ${CONFIG.artist}`, text: `${CONFIG.title} by ${CONFIG.artist} is out now 🔥`, url: location.href };
+  try {
+    if (navigator.share) { await navigator.share(data); return; }
+    await navigator.clipboard.writeText(location.href);
+    toast('Link copied');
+  } catch (e) { /* user closed the share sheet */ }
+});
+
+/* ── Twinkling stars (echo the cover's star) ── */
+(() => {
+  const box = $('stars');
+  const count = reduceMotion ? 25 : 55;
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    const spark = Math.random() < 0.12;
+    const size = Math.random() * 2 + 1;
+    s.className = 'star' + (spark ? ' spark' : '');
+    s.style.cssText = `
+      left:${Math.random() * 100}%; top:${Math.random() * 100}%;
+      width:${size}px; height:${size}px;
+      --o:${spark ? 0.8 : Math.random() * 0.5 + 0.2};
+      animation-duration:${Math.random() * 4 + 3}s;
+      animation-delay:${Math.random() * 6}s;`;
+    box.appendChild(s);
+  }
+})();
+
+/* ── 3D tilt + glare (shared by the small cover and the big one) ── */
+function tilt(el, glareEls, e, max) {
+  const r = el.getBoundingClientRect();
+  const x = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1);
+  const y = Math.min(Math.max((e.clientY - r.top) / r.height, 0), 1);
+  el.style.setProperty('--ry', `${(x - 0.5) * max * 2}deg`);
+  el.style.setProperty('--rx', `${(0.5 - y) * max * 2}deg`);
+  glareEls.forEach(g => {
+    g.style.setProperty('--gx', `${x * 100}%`);
+    g.style.setProperty('--gy', `${y * 100}%`);
+    g.style.setProperty('--go', '1');
+  });
+}
+function untilt(el, glareEls) {
+  el.style.setProperty('--ry', '0deg');
+  el.style.setProperty('--rx', '0deg');
+  glareEls.forEach(g => g.style.setProperty('--go', '0'));
+}
+
+const art = $('artwork');
+const artGlare = [art.querySelector('.glare')];
+
+if (!reduceMotion && matchMedia('(pointer: fine)').matches) {
+  art.addEventListener('pointerenter', () => { art.classList.add('tilting'); art.style.setProperty('--sc', '1.03'); });
+  art.addEventListener('pointermove', e => tilt(art, artGlare, e, 16));
+  art.addEventListener('pointerleave', () => {
+    art.classList.remove('tilting');
+    art.style.setProperty('--sc', '1');
+    untilt(art, artGlare);
+  });
+}
+
+/* ── Back cover content ── */
+(() => {
+  const b = CONFIG.back || {};
+  $('bArtist').textContent = CONFIG.artist;
+  $('bTitle').textContent = CONFIG.title;
+  $('lbCover').src = CONFIG.cover;
+  $('lbCover').alt = `${CONFIG.title} — ${CONFIG.artist} cover`;
+  $('bTracks').innerHTML = (b.tracks || []).map((t, i) =>
+    `<li><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t"></span><span class="dur"></span></li>`).join('');
+  [...$('bTracks').children].forEach((li, i) => {
+    li.querySelector('.t').textContent = b.tracks[i].title;
+    li.querySelector('.dur').textContent = b.tracks[i].duration || '';
+  });
+  $('bCredits').innerHTML = '';
+  (b.credits || []).forEach(([role, who]) => {
+    const line = document.createElement('div');
+    line.append(`${role} `);
+    const strong = document.createElement('b');
+    strong.textContent = who;
+    line.append(strong);
+    $('bCredits').append(line);
+  });
+  $('bLegal').innerHTML = '';
+  $('bLegal').append(b.legal || '');
+  const br = document.createElement('br');
+  $('bLegal').append(br, `Release ${dateLabel}`);
+  // decorative barcode built from the title so it's always the same
+  let seed = [...(CONFIG.title + CONFIG.artist)].reduce((a, c) => a + c.charCodeAt(0), 7);
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  $('bBarcode').innerHTML = Array.from({ length: 34 }, () =>
+    `<i style="width:${rnd() < 0.3 ? 3 : 1}px"></i>`).join('');
+})();
+
+/* ── Lightbox: cover flies to the front, tap to flip ── */
+const lb = $('lightbox'), stage = $('lbStage'), lbTilt = $('lbTilt'), flipper = $('lbFlip');
+const lbGlare = [...lb.querySelectorAll('.glare')];
+let lbOpen = false, busy = false;
+
+// transform that puts the big stage exactly on top of the small cover
+function fromSmall() {
+  const a = art.getBoundingClientRect();
+  const s = stage.getBoundingClientRect();
+  const dx = (a.left + a.width / 2) - (s.left + s.width / 2);
+  const dy = (a.top + a.height / 2) - (s.top + s.height / 2);
+  return `translate(${dx}px, ${dy}px) scale(${a.width / s.width})`;
+}
+
+function openCover() {
+  if (lbOpen || busy) return;
+  lbOpen = true;
+  lb.classList.remove('flipped');
+  lb.setAttribute('aria-hidden', 'false');
+  untilt(art, artGlare);
+  stage.style.transition = 'none';
+  lb.style.visibility = 'visible';
+  stage.style.transform = fromSmall();
+  art.style.visibility = 'hidden';
+  stage.getBoundingClientRect(); // force layout before animating
+  stage.style.transition = '';
+  requestAnimationFrame(() => {
+    lb.classList.add('open');
+    stage.style.transform = 'none';
+  });
+  document.body.style.overflow = 'hidden';
+  $('lbClose').focus({ preventScroll: true });
+}
+
+function closeCover() {
+  if (!lbOpen || busy) return;
+  busy = true;
+  const wasFlipped = lb.classList.contains('flipped');
+  lb.classList.remove('flipped');
+  untilt(lbTilt, lbGlare);
+  const go = () => {
+    lb.classList.remove('open');
+    stage.style.transform = fromSmall();
+    setTimeout(() => {
+      art.style.visibility = '';
+      lb.style.visibility = '';
+      stage.style.transform = '';
+      lb.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      lbOpen = busy = false;
+      art.focus({ preventScroll: true });
+    }, reduceMotion ? 0 : 560);
+  };
+  // if it's showing the back, turn it to the front first
+  wasFlipped && !reduceMotion ? setTimeout(go, 450) : go();
+}
+
+art.addEventListener('click', openCover);
+art.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCover(); } });
+
+flipper.addEventListener('click', e => {
+  e.stopPropagation();
+  lb.classList.toggle('flipped');
+  $('lbHint').textContent = lb.classList.contains('flipped') ? 'Tap again to turn it back' : 'Tap the cover to flip';
+});
+
+lb.addEventListener('click', closeCover);
+$('lbClose').addEventListener('click', e => { e.stopPropagation(); closeCover(); });
+document.addEventListener('keydown', e => {
+  if (!lbOpen) return;
+  if (e.key === 'Escape') closeCover();
+  if (e.key === 'f' || e.key === 'F') lb.classList.toggle('flipped');
+});
+
+if (!reduceMotion) {
+  lb.addEventListener('pointermove', e => { if (lbOpen && !busy) tilt(lbTilt, lbGlare, e, 18); });
+  lb.addEventListener('pointerleave', () => untilt(lbTilt, lbGlare));
+  lb.addEventListener('pointerup', e => { if (e.pointerType === 'touch') untilt(lbTilt, lbGlare); });
+}
+</script>
+</body>
+</html>

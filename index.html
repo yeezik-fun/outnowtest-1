@@ -382,38 +382,75 @@
   }
   .release-date strong { color: var(--text); font-weight: 500; }
 
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  .cd-item {
-    text-align: center;
-    padding: 12px 0 10px;
-    border-radius: 12px;
+  /* ───── Preview player ───── */
+  .player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px 10px 10px;
+    border-radius: 14px;
     background: var(--glass);
     border: 1px solid var(--line);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-
-  .cd-value {
-    display: block;
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
+  .p-btn {
+    width: 46px; height: 46px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 22px -6px color-mix(in srgb, var(--accent) 70%, transparent);
+    transition: transform 0.12s, filter 0.15s;
+    -webkit-tap-highlight-color: transparent;
   }
-
-  .cd-label {
-    display: block;
-    font-size: 10px;
+  .p-btn:hover { filter: brightness(1.1); }
+  .p-btn:active { transform: scale(0.94); }
+  .p-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .p-btn svg { width: 18px; height: 18px; }
+  .p-btn .i-play { margin-left: 3px; }
+  .p-btn .i-pause, .player.playing .p-btn .i-play { display: none; }
+  .player.playing .p-btn .i-pause { display: block; }
+  .p-time {
+    font-size: 11px;
     color: var(--muted);
-    margin-top: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
+    font-variant-numeric: tabular-nums;
+    width: 30px;
+    flex-shrink: 0;
   }
+  .p-time.end { text-align: right; }
+  .wave {
+    flex: 1;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    touch-action: none;
+    min-width: 0;
+  }
+  .wave i {
+    flex: 1;
+    min-width: 1px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.18);
+    transition: background 0.15s;
+  }
+  .wave i.on { background: var(--accent); }
+  .preview-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-top: 8px;
+  }
+
+  /* cover + background react to the music */
+  .artwork-wrap { transform: scale(calc(1 + var(--pulse, 0) * 0.025)); transition: transform 0.08s linear; }
+  .ambient { opacity: calc(0.35 + var(--pulse, 0) * 0.35); }
 
   .divider {
     width: 100%;
@@ -634,8 +671,7 @@
 
     .release-info { text-align: left; margin-top: 2rem; }
     .release-date { font-size: 13px; }
-    .stats { max-width: 440px; }
-    .cd-value { font-size: 24px; }
+    .player { max-width: 480px; }
 
     .divider { margin: 2rem 0 1.6rem; background: linear-gradient(90deg, var(--line), transparent); }
 
@@ -673,8 +709,7 @@
     .status { margin-bottom: 1rem; }
     .title { font-size: clamp(38px, 4vw, 52px); }
     .release-info { margin-top: 1.4rem; }
-    .cd-item { padding: 9px 0 8px; }
-    .cd-value { font-size: 20px; }
+    .p-btn { width: 42px; height: 42px; }
     .divider { margin: 1.4rem 0 1.2rem; }
     .platforms { gap: 8px; }
     .btn { padding: 8px 12px; }
@@ -723,11 +758,17 @@
 
   <section class="release-info" id="releaseInfo">
     <p class="release-date" id="releaseLine"></p>
-    <div class="stats" id="stats">
-      <div class="cd-item"><span class="cd-value" id="stType"></span><span class="cd-label">Format</span></div>
-      <div class="cd-item"><span class="cd-value" id="stTracks"></span><span class="cd-label">Tracks</span></div>
-      <div class="cd-item"><span class="cd-value" id="stLength"></span><span class="cd-label">Length</span></div>
+    <div class="player" id="player">
+      <button class="p-btn" id="pBtn" type="button" aria-label="Play preview">
+        <svg class="i-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>
+        <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5" y="3.5" width="4.5" height="17" rx="1.2"/><rect x="14.5" y="3.5" width="4.5" height="17" rx="1.2"/></svg>
+      </button>
+      <span class="p-time" id="pCur">0:00</span>
+      <div class="wave" id="wave" role="slider" aria-label="Seek preview" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"></div>
+      <span class="p-time end" id="pDur">0:30</span>
     </div>
+    <p class="preview-label">Preview</p>
+    <audio id="audio" preload="metadata"></audio>
   </section>
 
   <div class="divider"></div>
@@ -795,7 +836,7 @@ const CONFIG = {
   artist:  'Yeezik',
   cover:   'artwork.png',
 
-  type:    'Single',           // 'Single', 'EP' or 'Album'
+  preview: 'preview.mp3',      // ~30s audio clip; leave '' to hide the player
 
   // Release day with Italian time zone (+01:00 in winter, +02:00 in summer)
   release: '2026-11-05T00:00:00+01:00',
@@ -891,16 +932,127 @@ const ago = daysOut === 0 ? 'today' : daysOut === 1 ? 'yesterday' : daysOut < 7 
 $('releaseLine').innerHTML = `Released <strong>${ago}</strong>` + (daysOut > 0 && daysOut < 7 ? ` · ${dateLabel}` : '');
 if (daysOut === 0) $('statusText').textContent = 'Out now · new release';
 
-/* ── Format / tracks / length (from the back-cover tracklist) ── */
+/* ── Preview player ── */
 (() => {
-  const tracks = (CONFIG.back && CONFIG.back.tracks) || [];
-  const secs = tracks.reduce((a, t) => {
-    const [m, s] = String(t.duration || '0:0').split(':').map(Number);
-    return a + (m || 0) * 60 + (s || 0);
-  }, 0);
-  $('stType').textContent = CONFIG.type || 'Single';
-  $('stTracks').textContent = tracks.length || 1;
-  $('stLength').textContent = secs ? `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}` : '—';
+  const player = $('player'), audio = $('audio'), wave = $('wave'), btn = $('pBtn');
+  if (!CONFIG.preview) { player.remove(); document.querySelector('.preview-label').remove(); return; }
+  audio.src = CONFIG.preview;
+
+  const BARS = matchMedia('(min-width: 960px)').matches ? 64 : 48;
+  const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+
+  // bars: placeholder shape first, then the real waveform from the file
+  const setBars = peaks => {
+    wave.innerHTML = peaks.map(p => `<i style="height:${Math.max(8, Math.round(p * 100))}%"></i>`).join('');
+    paint();
+  };
+  let seed = 11;
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  setBars(Array.from({ length: BARS }, (_, i) => (0.25 + rnd() * 0.75) * (Math.sin(Math.PI * i / BARS) * 0.6 + 0.4)));
+
+  fetch(CONFIG.preview).then(r => r.arrayBuffer()).then(buf => {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    const off = new Ctx();
+    return off.decodeAudioData(buf).then(d => { off.close && off.close(); return d; });
+  }).then(data => {
+    const ch = data.getChannelData(0), step = Math.floor(ch.length / BARS), peaks = [];
+    for (let b = 0; b < BARS; b++) {
+      let sum = 0;
+      for (let i = b * step; i < (b + 1) * step; i += 32) sum += ch[i] * ch[i];
+      peaks.push(Math.sqrt(sum / (step / 32)));
+    }
+    const max = Math.max(...peaks) || 1;
+    setBars(peaks.map(p => Math.pow(p / max, 0.7)));
+  }).catch(() => { /* keep placeholder shape (e.g. opened from file://) */ });
+
+  // Web Audio chain: fade in/out + level meter for the pulse
+  let ctx, gain, analyser, level;
+  function initAudio() {
+    if (ctx) return;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    ctx = new Ctx();
+    const src = ctx.createMediaElementSource(audio);
+    gain = ctx.createGain();
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+    level = new Uint8Array(analyser.fftSize);
+    src.connect(gain).connect(analyser).connect(ctx.destination);
+  }
+  const ramp = (to, secs) => {
+    const now = ctx.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(gain.gain.value, now);
+    gain.gain.linearRampToValueAtTime(to, now + secs);
+  };
+
+  function play() {
+    initAudio();
+    ctx.resume();
+    if (audio.ended || audio.currentTime >= (audio.duration || 30) - 0.1) audio.currentTime = 0;
+    gain.gain.value = 0;
+    audio.play().then(() => ramp(1, 0.6)).catch(() => {});
+  }
+  function pause() {
+    if (!ctx) { audio.pause(); return; }
+    ramp(0, 0.25);
+    setTimeout(() => audio.pause(), 260);
+  }
+  btn.addEventListener('click', () => audio.paused ? play() : pause());
+
+  audio.addEventListener('play', () => { player.classList.add('playing'); btn.setAttribute('aria-label', 'Pause preview'); loop(); });
+  audio.addEventListener('pause', () => { player.classList.remove('playing'); btn.setAttribute('aria-label', 'Play preview'); });
+  audio.addEventListener('ended', () => { audio.currentTime = 0; paint(); });
+  audio.addEventListener('loadedmetadata', () => { $('pDur').textContent = fmt(audio.duration); });
+
+  function paint() {
+    const d = audio.duration || 30, p = audio.currentTime / d;
+    [...wave.children].forEach((b, i) => b.classList.toggle('on', (i + 0.5) / wave.children.length <= p));
+    $('pCur').textContent = fmt(audio.currentTime);
+    wave.setAttribute('aria-valuenow', Math.round(p * 100));
+  }
+
+  // soft fade at the end of the clip + pulse on cover/background
+  const root = document.documentElement;
+  let smooth = 0;
+  function loop() {
+    paint();
+    if (ctx && !audio.paused) {
+      const d = audio.duration || 30;
+      if (d - audio.currentTime < 2 && !audio._fading) { audio._fading = true; ramp(0, d - audio.currentTime); }
+      if (d - audio.currentTime >= 2) audio._fading = false;
+      if (!reduceMotion) {
+        analyser.getByteTimeDomainData(level);
+        let sum = 0;
+        for (const v of level) sum += (v - 128) * (v - 128);
+        const rms = Math.min(1, Math.sqrt(sum / level.length) / 40);
+        smooth = rms > smooth ? rms : smooth * 0.88;
+        root.style.setProperty('--pulse', smooth.toFixed(3));
+      }
+      requestAnimationFrame(loop);
+    } else {
+      root.style.setProperty('--pulse', '0');
+    }
+  }
+
+  // seek by tapping / dragging the waveform
+  const seek = e => {
+    const r = wave.getBoundingClientRect();
+    const x = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 0.999);
+    audio.currentTime = x * (audio.duration || 30);
+    if (ctx && !audio.paused) ramp(1, 0.15);
+    paint();
+  };
+  let dragging = false;
+  wave.addEventListener('pointerdown', e => { dragging = true; wave.setPointerCapture(e.pointerId); seek(e); });
+  wave.addEventListener('pointermove', e => { if (dragging) seek(e); });
+  wave.addEventListener('pointerup', () => { dragging = false; });
+  wave.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') audio.currentTime = Math.min(audio.duration || 30, audio.currentTime + 3);
+    else if (e.key === 'ArrowLeft') audio.currentTime = Math.max(0, audio.currentTime - 3);
+    else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); btn.click(); }
+    else return;
+    paint();
+  });
 })();
 
 /* ── Platform buttons (main platform first) ── */
